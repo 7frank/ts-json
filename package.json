@@ -1,0 +1,16 @@
+{
+  "name": "ts-json-stuff",
+  "version": "1.0.0",
+  "description": "A tool for generating TypeScript types from JSON schemas and executing JSON-TS files",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "json-schema-to-typescript": "^9.1.0",
+    "js-yaml": "^4.1.1",
+    "chokidar": "^3.5.2",
+    "tsx": "^1.0.2"
+  },
+  "author": "7frank",
+  "license": "MIT"
+}
