@@ -1,13 +1,42 @@
 const fs = require("fs");
-const { compileFromFile } = require("json-schema-to-typescript");
+const { compileFromFile, compile } = require("json-schema-to-typescript");
 const chokidar = require("chokidar");
+const https = require("https");
 
-const configFilePath = "path/to/config.json";
+const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
+
+async function downloadSchema(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (response) => {
+        let rawData = "";
+
+        response.on("data", (chunk) => {
+          rawData += chunk;
+        });
+
+        response.on("end", () => {
+          try {
+            const jsonData = JSON.parse(rawData);
+            console.log(rawData);
+            resolve(jsonData);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      })
+      .on("error", (error) => {
+        reject(error);
+      });
+  });
+}
 
 async function generateTypes(name, schemaUrl) {
   try {
-    const types = await compileFromFile(schemaUrl);
+    const jsonSchema = downloadSchema(schemaUrl);
+
+    const types = await compile(jsonSchema, "MySchema");
 
     const fileName = `${name}.ts`;
     const filePath = `${outputFolder}/${fileName}`;
@@ -53,50 +82,50 @@ function watchConfigFile() {
  *
  */
 
-const { exec } = require("tsx");
+// const { exec } = require("tsx");
 
-const srcFolderPath = "src";
+// const srcFolderPath = "src";
 
-function executeJsonTsFile(filePath) {
-  const outputFile = filePath.replace(".json.ts", "");
+// function executeJsonTsFile(filePath) {
+//   const outputFile = filePath.replace(".json.ts", "");
 
-  exec(filePath)
-    .then((result) => {
-      fs.writeFileSync(outputFile, result);
-      console.log(
-        `Executed ${filePath} and stored the result in ${outputFile}`
-      );
-    })
-    .catch((error) => {
-      console.error(`Error executing ${filePath}:`, error);
-    });
-}
+//   exec(filePath)
+//     .then((result) => {
+//       fs.writeFileSync(outputFile, result);
+//       console.log(
+//         `Executed ${filePath} and stored the result in ${outputFile}`
+//       );
+//     })
+//     .catch((error) => {
+//       console.error(`Error executing ${filePath}:`, error);
+//     });
+// }
 
-function watchSrcFolder() {
-  const watcher = chokidar.watch(`${srcFolderPath}/**/*.json.ts`);
-  console.log(`Watching "${srcFolderPath}" for *.json.ts files...`);
+// function watchSrcFolder() {
+//   const watcher = chokidar.watch(`${srcFolderPath}/**/*.json.ts`);
+//   console.log(`Watching "${srcFolderPath}" for *.json.ts files...`);
 
-  watcher.on("add", (filePath) => {
-    console.log(`New file added: ${filePath}`);
-    executeJsonTsFile(filePath);
-  });
+//   watcher.on("add", (filePath) => {
+//     console.log(`New file added: ${filePath}`);
+//     executeJsonTsFile(filePath);
+//   });
 
-  watcher.on("change", (filePath) => {
-    console.log(`File changed: ${filePath}`);
-    executeJsonTsFile(filePath);
-  });
+//   watcher.on("change", (filePath) => {
+//     console.log(`File changed: ${filePath}`);
+//     executeJsonTsFile(filePath);
+//   });
 
-  watcher.on("unlink", (filePath) => {
-    console.log(`File removed: ${filePath}`);
-    const outputFile = filePath.replace(".json.ts", "");
-    fs.unlinkSync(outputFile);
-    console.log(`Deleted corresponding output file: ${outputFile}`);
-  });
+//   watcher.on("unlink", (filePath) => {
+//     console.log(`File removed: ${filePath}`);
+//     const outputFile = filePath.replace(".json.ts", "");
+//     fs.unlinkSync(outputFile);
+//     console.log(`Deleted corresponding output file: ${outputFile}`);
+//   });
 
-  watcher.on("error", (error) => {
-    console.error("Error watching src folder:", error);
-  });
-}
+//   watcher.on("error", (error) => {
+//     console.error("Error watching src folder:", error);
+//   });
+// }
 
 /***
  *
@@ -108,7 +137,7 @@ function watchSrcFolder() {
 function runTool() {
   processConfigFile();
   watchConfigFile();
-  watchSrcFolder();
+  // watchSrcFolder();
 }
 
 runTool();
