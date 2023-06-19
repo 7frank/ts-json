@@ -1,0 +1,11 @@
+{
+  "author": "7frank",
+  "dependencies": {},
+  "description": "A tool for generating TypeScript types from JSON schemas and executing JSON-TS files",
+  "license": "MIT",
+  "name": "ts-json-stuff",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "version": "1.0.0"
+}

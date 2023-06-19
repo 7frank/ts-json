@@ -22,7 +22,7 @@ test("replaceCommentsWithDash more", (t) => {
    */
   `;
 
-  // TODO should fail but at least the implemenntation works so _shrug_
+  // TODO should fail but at least the implementation works so _shrug_
   const expected = `
   /**
    * an example with breaking content: "--.tsx"
