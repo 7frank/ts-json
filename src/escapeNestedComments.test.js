@@ -3,7 +3,7 @@ import assert from "node:assert";
 
 import {
   escapeNestedComments,
-  parseNestedStructure,
+  parseCustomTags,
 } from "./escapeNestedComments.js";
 
 // test("escapeNestedComments", (t) => {
@@ -46,8 +46,11 @@ test("buildCommentStructure", (t) => {
     */
   
    `;
-
-  const commentStructure = parseNestedStructure(srcString, "/*", "*/");
+  const tags = [
+    { type: "comment", start: "/*", end: "*/" },
+    // { type: "code", start: "Start_Code", end: "End_Code" },
+  ];
+  const commentStructure = parseCustomTags(srcString, tags);
 
   assert.strictEqual(commentStructure, {});
 });

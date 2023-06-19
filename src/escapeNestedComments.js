@@ -31,32 +31,54 @@ export function escapeNestedComments(comment, replaceFn = (s) => s) {
 
   return fixedComment;
 }
-export function parseNestedStructure(inputString, startTag, endTag) {
+export function parseCustomTags(inputString, tags) {
   const stack = [];
   const tree = [];
   let currentIndex = 0;
 
   while (currentIndex < inputString.length) {
-    const startTagIndex = inputString.indexOf(startTag, currentIndex);
-    const endTagIndex = inputString.indexOf(endTag, currentIndex);
+    let foundTag = null;
+    let foundTagIndex = inputString.length;
 
-    if (startTagIndex === -1 || endTagIndex === -1) {
+    for (const tag of tags) {
+      const startTagIndex = inputString.indexOf(tag.start, currentIndex);
+      if (startTagIndex !== -1 && startTagIndex < foundTagIndex) {
+        foundTag = tag;
+        foundTagIndex = startTagIndex;
+      }
+    }
+
+    if (!foundTag) {
       break; // No more tags found
     }
 
+    const startTagIndex = foundTagIndex;
+    const endTagIndex = inputString.indexOf(foundTag.end, currentIndex);
+
+    if (endTagIndex === -1) {
+      break; // Invalid structure, end tag not found
+    }
+
     if (startTagIndex < endTagIndex) {
-      stack.push(tree.length); // Store the parent index in the stack
       const element = {
+        type: foundTag.type,
         start: startTagIndex,
-        end: endTagIndex + endTag.length,
+        end: endTagIndex + foundTag.end.length,
         children: [],
       };
-      tree.push(element);
-      currentIndex = startTagIndex + startTag.length; // Move the current index past the start tag
+
+      if (stack.length > 0) {
+        const parent = stack[stack.length - 1];
+        parent.children.push(element);
+      } else {
+        tree.push(element);
+      }
+
+      stack.push(element);
+      currentIndex = startTagIndex + foundTag.start.length; // Move the current index past the start tag
     } else {
-      const parentIndex = stack.pop();
-      tree[parentIndex].end = endTagIndex + endTag.length; // Update the parent's end position
-      currentIndex = endTagIndex + endTag.length; // Move the current index past the end tag
+      stack.pop();
+      currentIndex = endTagIndex + foundTag.end.length; // Move the current index past the end tag
     }
   }
 
