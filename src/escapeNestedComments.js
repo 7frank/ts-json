@@ -42,8 +42,6 @@ export function replaceCommentsWithDash(code) {
         .replace(/\/\*/g, "->")
         .replace(/\*\//g, "<-") + "/";
 
-    if (replaced.includes("force consistent spacing after"))
-      console.log({ start, end }, replaced);
     code = code.slice(0, start + 1) + replaced + code.slice(end - 1 + 1);
   }
 
