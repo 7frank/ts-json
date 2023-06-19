@@ -1,40 +1,18 @@
 const fs = require("fs");
 const { compileFromFile, compile } = require("json-schema-to-typescript");
 const chokidar = require("chokidar");
-const https = require("https");
+const { downloadFile } = require("./src/downloadFile");
 
 const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
 
-async function downloadSchema(url) {
-  return new Promise((resolve, reject) => {
-    https
-      .get(url, (response) => {
-        let rawData = "";
-
-        response.on("data", (chunk) => {
-          rawData += chunk;
-        });
-
-        response.on("end", () => {
-          try {
-            const jsonData = JSON.parse(rawData);
-            console.log(rawData);
-            resolve(jsonData);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      })
-      .on("error", (error) => {
-        reject(error);
-      });
-  });
-}
-
 async function generateTypes(name, schemaUrl) {
+  console.log("generateTypes", "for", name, schemaUrl);
+
   try {
-    const jsonSchema = downloadSchema(schemaUrl);
+    const r = await downloadFile(schemaUrl);
+
+    const jsonSchema = JSON.parse(r);
 
     const types = await compile(jsonSchema, "MySchema");
 
