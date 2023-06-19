@@ -1,0 +1,14 @@
+diff --git a/node_modules/quicktype-core/dist/Messages.js b/node_modules/quicktype-core/dist/Messages.js
+index 306cd77..8aecf84 100644
+--- a/node_modules/quicktype-core/dist/Messages.js
++++ b/node_modules/quicktype-core/dist/Messages.js
+@@ -91,6 +91,9 @@ function messageError(kind, properties) {
+         }
+         userMessage = userMessage.replace("${" + name + "}", value);
+     }
++    if (kind =="IRNoEmptyUnions") console.warn()
++    console.log(kind,propertiesMap)
++    if (kind !="IRNoEmptyUnions")
+     throw new QuickTypeError(message, kind, userMessage, propertiesMap);
+ }
+ exports.messageError = messageError;
