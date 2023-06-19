@@ -2,7 +2,7 @@ const fs = require("fs");
 
 const chokidar = require("chokidar");
 const { downloadFile } = require("./src/downloadFile");
-const { compile } = require("./quick");
+const { compile } = require("./src/quick");
 const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
 

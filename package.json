@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "A tool for generating TypeScript types from JSON schemas and executing JSON-TS files",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "dependencies": {
     "chokidar": "^3.5.2",
     "js-yaml": "^4.1.0",
     "json-schema-to-typescript": "^9.1.0",
+    "nodemon": "^2.0.22",
     "quicktype": "^23.0.48",
     "quicktype-core": "^23.0.48",
     "tsx": "^3.12.7"
