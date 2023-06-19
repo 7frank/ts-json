@@ -28,6 +28,9 @@ export function findTopLevelComments(code) {
  * fiddle-ish top level comment escaping ... but working never the less
  */
 export function replaceCommentsWithDash(code) {
+  // replace "**.*" mostly used with file related comments
+  // TODO pass custom overrides on a per schema basis
+  code = code.replace(/\*\*\/\b/g, "--");
   const comments = findTopLevelComments(code);
 
   // Replace comments with '--'
@@ -36,8 +39,11 @@ export function replaceCommentsWithDash(code) {
     const replaced =
       code
         .substring(start + 1, end - 1)
-        .replace(/\/\*/g, "--")
-        .replace(/\*\//g, "--") + "/";
+        .replace(/\/\*/g, "->")
+        .replace(/\*\//g, "<-") + "/";
+
+    if (replaced.includes("force consistent spacing after"))
+      console.log({ start, end }, replaced);
     code = code.slice(0, start + 1) + replaced + code.slice(end - 1 + 1);
   }
 
