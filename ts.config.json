@@ -2,9 +2,5 @@
   {
     "name": "package-json-schema",
     "schemaUrl": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/package.json"
-  },
-  {
-    "name": "foo-schema",
-    "schemaUrl": "./test/package.json"
   }
 ]

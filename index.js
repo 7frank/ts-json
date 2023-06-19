@@ -1,8 +1,8 @@
 const fs = require("fs");
-const { compileFromFile, compile } = require("json-schema-to-typescript");
+
 const chokidar = require("chokidar");
 const { downloadFile } = require("./src/downloadFile");
-
+const { compile } = require("./quick");
 const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
 
@@ -12,9 +12,7 @@ async function generateTypes(name, schemaUrl) {
   try {
     const r = await downloadFile(schemaUrl);
 
-    const jsonSchema = JSON.parse(r);
-
-    const types = await compile(jsonSchema, "MySchema");
+    const types = await compile("MySchema", r);
 
     const fileName = `${name}.ts`;
     const filePath = `${outputFolder}/${fileName}`;

@@ -6,10 +6,12 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "json-schema-to-typescript": "^9.1.0",
-    "js-yaml": "^4.1.1",
     "chokidar": "^3.5.2",
-    "tsx": "^1.0.2"
+    "js-yaml": "^4.1.0",
+    "json-schema-to-typescript": "^9.1.0",
+    "quicktype": "^23.0.48",
+    "quicktype-core": "^23.0.48",
+    "tsx": "^3.12.7"
   },
   "author": "7frank",
   "license": "MIT"
