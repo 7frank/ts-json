@@ -1,86 +1,45 @@
-export function escapeNestedComments(comment, replaceFn = (s) => s) {
-  let fixedComment = "";
-  let stack = [];
-  let nestedComment = "";
-
-  for (let i = 0; i < comment.length; i++) {
-    if (comment[i] === "/" && comment[i + 1] === "*") {
-      if (comment[i + 2] === "*") {
-        stack.push(nestedComment);
-        nestedComment = "";
-        i += 2;
-      } else {
-        nestedComment += "/*";
-        i++;
-      }
-    } else if (comment[i] === "*" && comment[i + 1] === "/") {
-      if (stack.length > 1) {
-        const previousComment = stack.pop();
-        nestedComment = replaceFn(previousComment + nestedComment + "*/");
-      } else {
-        fixedComment += nestedComment + "*/";
-        nestedComment = "";
-      }
-      i++;
-    } else {
-      nestedComment += comment[i];
-    }
-  }
-
-  fixedComment += nestedComment;
-
-  return fixedComment;
-}
-export function parseCustomTags(inputString, tags) {
+export function findTopLevelComments(code) {
+  const comments = [];
   const stack = [];
-  const tree = [];
-  let currentIndex = 0;
+  let commentStart = null;
 
-  while (currentIndex < inputString.length) {
-    let foundTag = null;
-    let foundTagIndex = inputString.length;
-
-    for (const tag of tags) {
-      const startTagIndex = inputString.indexOf(tag.start, currentIndex);
-      if (startTagIndex !== -1 && startTagIndex < foundTagIndex) {
-        foundTag = tag;
-        foundTagIndex = startTagIndex;
+  for (let i = 0; i < code.length; i++) {
+    if (code[i] === "/" && code[i + 1] === "*") {
+      if (stack.length === 0) {
+        commentStart = i;
       }
-    }
-
-    if (!foundTag) {
-      break; // No more tags found
-    }
-
-    const startTagIndex = foundTagIndex;
-    const endTagIndex = inputString.indexOf(foundTag.end, currentIndex);
-
-    if (endTagIndex === -1) {
-      break; // Invalid structure, end tag not found
-    }
-
-    if (startTagIndex < endTagIndex) {
-      const element = {
-        type: foundTag.type,
-        start: startTagIndex,
-        end: endTagIndex + foundTag.end.length,
-        children: [],
-      };
-
-      if (stack.length > 0) {
-        const parent = stack[stack.length - 1];
-        parent.children.push(element);
-      } else {
-        tree.push(element);
+      stack.push(i);
+      i++; // Skip the next character since it's part of the comment start
+    } else if (code[i] === "*" && code[i + 1] === "/") {
+      const commentEnd = i + 1;
+      if (stack.length === 1) {
+        const comment = { start: commentStart, end: commentEnd + 1 };
+        comments.push(comment);
       }
-
-      stack.push(element);
-      currentIndex = startTagIndex + foundTag.start.length; // Move the current index past the start tag
-    } else {
       stack.pop();
-      currentIndex = endTagIndex + foundTag.end.length; // Move the current index past the end tag
+      i++; // Skip the next character since it's part of the comment end
     }
   }
 
-  return tree;
+  return comments;
+}
+
+/**
+ * fiddle-ish top level comment escaping ... but working never the less
+ */
+export function replaceCommentsWithDash(code) {
+  const comments = findTopLevelComments(code);
+
+  // Replace comments with '--'
+  for (let i = comments.length - 1; i >= 0; i--) {
+    const { start, end } = comments[i];
+    const replaced =
+      code
+        .substring(start + 1, end - 1)
+        .replace(/\/\*/g, "--")
+        .replace(/\*\//g, "--") + "/";
+    code = code.slice(0, start + 1) + replaced + code.slice(end - 1 + 1);
+  }
+
+  return code;
 }

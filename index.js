@@ -2,7 +2,7 @@ import fs from "fs";
 import chokidar from "chokidar";
 import { downloadFile } from "./src/downloadFile.js";
 import { compile } from "./src/quick.js";
-import { escapeNestedComments } from "./src/escapeNestedComments.js";
+import { replaceCommentsWithDash } from "./src/escapeNestedComments.js";
 
 const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
@@ -42,7 +42,7 @@ async function generateTypes(name, schemaUrl) {
       r
     );
 
-    types = escapeNestedComments(types);
+    types = replaceCommentsWithDash(types);
 
     const outputFileName = `${name}.ts`;
     const filePath = `${outputFolder}/${outputFileName}`;
