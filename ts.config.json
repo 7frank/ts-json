@@ -1,6 +1,6 @@
 [
   {
-    "name": "package-json-schema",
+    "name": "PackageJsonSchema",
     "schemaUrl": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/package.json"
   }
 ]

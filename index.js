@@ -1,21 +1,48 @@
 const fs = require("fs");
-
+const path = require("path");
 const chokidar = require("chokidar");
 const { downloadFile } = require("./src/downloadFile");
 const { compile } = require("./src/quick");
 const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
 
+function getFileNameAndExtension(path) {
+  // Extract the last part of the path after the last '/'
+  const fileNameWithExtension = path.substring(path.lastIndexOf("/") + 1);
+
+  // Split the file name and extension using the last occurrence of '.'
+  const index = fileNameWithExtension.lastIndexOf(".");
+  const fileName = fileNameWithExtension.substring(0, index);
+  const extension = fileNameWithExtension.substring(index + 1);
+
+  return {
+    fileName,
+    extension,
+  };
+}
+
+function kebabToCamelCase(str) {
+  return str.replace(/-([a-z])/g, function (match, letter) {
+    return letter.toUpperCase();
+  });
+}
+
 async function generateTypes(name, schemaUrl) {
   console.log("generateTypes", "for", name, schemaUrl);
+
+  const { extension, fileName: schemaFileName } =
+    getFileNameAndExtension(schemaUrl);
 
   try {
     const r = await downloadFile(schemaUrl);
 
-    const types = await compile("MySchema", r);
+    const types = await compile(
+      kebabToCamelCase(schemaFileName + "-" + extension + "-schema"),
+      r
+    );
 
-    const fileName = `${name}.ts`;
-    const filePath = `${outputFolder}/${fileName}`;
+    const outputFileName = `${name}.ts`;
+    const filePath = `${outputFolder}/${outputFileName}`;
 
     await fs.promises.writeFile(filePath, types);
     console.log(`Generated types for "${name}". Saved to "${filePath}"`);
