@@ -15,4 +15,4 @@ const mySchema: PackageJSONSchema = {
 
 // will throw an error if the schema is not valid
 const packageJSONSchema = Convert.toPackageJSONSchema(JSON.stringify(mySchema));
-console.log("json of schema valid");
+console.log(JSON.stringify(packageJSONSchema, null, "  "));
