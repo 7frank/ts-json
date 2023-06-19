@@ -1,10 +1,10 @@
-const {
+import {
   quicktype,
   InputData,
   jsonInputForTargetLanguage,
   JSONSchemaInput,
   FetchingJSONSchemaStore,
-} = require("quicktype-core");
+} from "quicktype-core";
 
 async function quicktypeJSONSchema(targetLanguage, typeName, jsonSchemaString) {
   const schemaInput = new JSONSchemaInput(new FetchingJSONSchemaStore());
@@ -22,7 +22,7 @@ async function quicktypeJSONSchema(targetLanguage, typeName, jsonSchemaString) {
   });
 }
 
-async function compile(schemaName, jsonString) {
+export async function compile(schemaName, jsonString) {
   const { lines } = await quicktypeJSONSchema(
     "typescript",
     schemaName,
@@ -30,5 +30,3 @@ async function compile(schemaName, jsonString) {
   );
   return lines.join("\n");
 }
-
-module.exports = { compile };

@@ -1,5 +1,5 @@
-const fs = require("fs");
-const https = require("https");
+import fs from "fs";
+import https from "https";
 
 async function downloadSchema(url) {
   return new Promise((resolve, reject) => {
@@ -21,7 +21,7 @@ async function downloadSchema(url) {
   });
 }
 
-async function downloadFile(fileUrlOrPath) {
+export async function downloadFile(fileUrlOrPath) {
   if (fs.existsSync(fileUrlOrPath)) {
     // File exists locally, read it
     return fs.readFileSync(fileUrlOrPath, { encoding: "utf8" });
@@ -29,4 +29,3 @@ async function downloadFile(fileUrlOrPath) {
     return await downloadSchema(fileUrlOrPath);
   }
 }
-exports.downloadFile = downloadFile;

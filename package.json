@@ -6,6 +6,7 @@
     "start": "nodemon index.js",
     "postinstall": "patch-package"
   },
+  "type": "module",
   "dependencies": {
     "chokidar": "^3.5.2",
     "js-yaml": "^4.1.0",

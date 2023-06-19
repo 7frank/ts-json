@@ -1,8 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const chokidar = require("chokidar");
-const { downloadFile } = require("./src/downloadFile");
-const { compile } = require("./src/quick");
+import fs from "fs";
+import chokidar from "chokidar";
+import { downloadFile } from "./src/downloadFile.js";
+import { compile } from "./src/quick.js";
+import { escapeNestedComments } from "./src/escapeNestedComments.js";
+
 const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
 
@@ -36,10 +37,12 @@ async function generateTypes(name, schemaUrl) {
   try {
     const r = await downloadFile(schemaUrl);
 
-    const types = await compile(
+    let types = await compile(
       kebabToCamelCase(schemaFileName + "-" + extension + "-schema"),
       r
     );
+
+    types = escapeNestedComments(types);
 
     const outputFileName = `${name}.ts`;
     const filePath = `${outputFolder}/${outputFileName}`;
@@ -85,7 +88,7 @@ function watchConfigFile() {
  *
  */
 
-// const { exec } = require("tsx");
+// const { exec } from"tsx");
 
 // const srcFolderPath = "src";
 
