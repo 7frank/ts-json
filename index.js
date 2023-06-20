@@ -10,9 +10,15 @@ async function processConfigFile() {
     const configContent = await fs.promises.readFile(configFilePath, "utf8");
     const config = JSON.parse(configContent);
 
-    for (const { name, schemaUrl } of config) {
+    for await (const { name, schemaUrl } of config.schemas) {
       console.log(`Generating types for "${name}"...`);
       await generateTypes(name, schemaUrl, { outputFolder });
+    }
+
+    // TODO instead of generating them every time let's have a file watcher
+    for await (const { name, output } of config.files) {
+      console.log(`TODO Generating target files "${name}" >> "${output}" `);
+      // await generateTypes(name, schemaUrl, { outputFolder });
     }
   } catch (error) {
     console.error("Error reading or parsing the config file:", error);
