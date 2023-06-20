@@ -3,30 +3,11 @@ import chokidar from "chokidar";
 import { downloadFile } from "./src/downloadFile.js";
 import { compile } from "./src/quick.js";
 import { replaceCommentsWithDash } from "./src/escapeNestedComments.js";
+import { kebabToCamelCase } from "./src/kebabToCamelCase.js";
+import { getFileNameAndExtension } from "./getFileNameAndExtension.js";
 
 const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
-
-function getFileNameAndExtension(path) {
-  // Extract the last part of the path after the last '/'
-  const fileNameWithExtension = path.substring(path.lastIndexOf("/") + 1);
-
-  // Split the file name and extension using the last occurrence of '.'
-  const index = fileNameWithExtension.lastIndexOf(".");
-  const fileName = fileNameWithExtension.substring(0, index);
-  const extension = fileNameWithExtension.substring(index + 1);
-
-  return {
-    fileName,
-    extension,
-  };
-}
-
-function kebabToCamelCase(str) {
-  return str.replace(/-([a-z])/g, function (match, letter) {
-    return letter.toUpperCase();
-  });
-}
 
 async function generateTypes(name, schemaUrl) {
   console.log("generateTypes", "for", name, schemaUrl);
