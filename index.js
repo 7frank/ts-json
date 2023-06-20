@@ -1,39 +1,9 @@
 import fs from "fs";
 import chokidar from "chokidar";
-import { downloadFile } from "./src/downloadFile.js";
-import { compile } from "./src/quick.js";
-import { replaceCommentsWithDash } from "./src/escapeNestedComments.js";
-import { kebabToCamelCase } from "./src/kebabToCamelCase.js";
-import { getFileNameAndExtension } from "./getFileNameAndExtension.js";
+import { generateTypes } from "./src/generateTypes.js";
 
 const configFilePath = "./ts.config.json";
 const outputFolder = "schema";
-
-async function generateTypes(name, schemaUrl) {
-  console.log("generateTypes", "for", name, schemaUrl);
-
-  const { extension, fileName: schemaFileName } =
-    getFileNameAndExtension(schemaUrl);
-
-  try {
-    const r = await downloadFile(schemaUrl);
-
-    let types = await compile(
-      kebabToCamelCase(schemaFileName + "-" + extension + "-schema"),
-      r
-    );
-
-    types = replaceCommentsWithDash(types);
-
-    const outputFileName = `${name}.ts`;
-    const filePath = `${outputFolder}/${outputFileName}`;
-
-    await fs.promises.writeFile(filePath, types);
-    console.log(`Generated types for "${name}". Saved to "${filePath}"`);
-  } catch (error) {
-    console.error(`Error generating types for "${name}":`, error);
-  }
-}
 
 async function processConfigFile() {
   try {
@@ -42,7 +12,7 @@ async function processConfigFile() {
 
     for (const { name, schemaUrl } of config) {
       console.log(`Generating types for "${name}"...`);
-      await generateTypes(name, schemaUrl);
+      await generateTypes(name, schemaUrl, { outputFolder });
     }
   } catch (error) {
     console.error("Error reading or parsing the config file:", error);
